@@ -1,7 +1,3 @@
-# Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
 ## Available Scripts
 
 In the project directory, you can run:
@@ -11,60 +7,106 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# How to deploy
 
-### `npm test`
+ - Run `npm install` | `yarn install` to install all dependencies.
+ - Run `npm start`   | `yarn run` to run the app locally.
+ - You can find the project running on `localhost:3000`.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Reminder
 
-### `npm run build`
+<div align="center">
+    <img width="442" alt="image" src="https://github.com/Willikox/calendarioRedux/assets/38199474/4737d236-439f-4b13-9715-5ee54fe3a37a">
+</div>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+A data entry was created and can be observed within the indicated date. It is controlled by month in such a way that, if you want to enter a reminder in a specific month and year, the reminder will be there, and the data entry will be cleared. Reminders cannot exceed 30 characters.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+If the reminder is set outside the current month, it can be seen in a shaded color, and by clicking on the shaded color, it will direct you to that month for modification.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# More Reminders
 
-### `npm run eject`
+<div align="center">
+    <img width="442" alt="image" src="https://github.com/Willikox/calendarioRedux/assets/38199474/da5141dd-a987-4341-bcbf-756847057afb">
+</div>
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+By clicking, the information is retrieved, which can be modified such as the reminder, date, time, and city. If you do not want to modify and want a new reminder instead, you can click on an empty box in the calendar, and the data will be cleared.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The way to control more reminders is by clicking the '+3 more' button since I have 3 reminders, and according to the amount, you can see the number; which allows you to see the reminders made and ordered by time. Additionally, if I create a reminder, it will always be shown in the calendar at the earliest time.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# edit multiple reminders
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+<div align="center">
+    <img width="442" alt="image" src="https://github.com/Willikox/calendarioRedux/assets/38199474/a50e0e29-2de9-4281-8fe8-d69bfa5a2f43">
+</div>
 
-## Learn More
+In a modal, we can see all the reminders, and when hovering over them, they are selected thanks to the cursor pointer, and the color changes to select which one we want to modify. We select it, and the modal closes, retrieving the data so we can modify it. If we do not want to modify anything, clicking outside the modal will close it.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```javascript
+const remindersReducer = (state = [], action) => {
+    switch (action.type){
+        case 'ADD_REMINDER':
+            return [...state, action.payload];
+        case 'UPDATE_REMINDER':
+            return state.map(r => (r.id === action.payload.id ? action.payload : r));
+        default:
+            return state;
+    }
+};
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+export default remindersReducer;
+```
 
-### Code Splitting
+```javascript
+const remindersReducer = (state = [], action) => {
+    switch (action.type){
+        case 'ADD_REMINDER':
+            return [...state, action.payload];
+        case 'UPDATE_REMINDER':
+            return state.map(r => (r.id === action.payload.id ? action.payload : r));
+        default:
+            return state;
+    }
+};
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+export default remindersReducer;
+```
 
-### Analyzing the Bundle Size
+```javascript
+const handleAddReminder = async (e) =>{
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const newReminder = {
+      id: editReminder ? editReminder.id : Date.now(),
+      text: formData.get('text'),
+      date: formData.get('date'),
+      time: formData.get('time'),
+      city: formData.get('city')
+    };
+    const weather = await fetchWeather(newReminder.city, newReminder.date);
+    newReminder.weather = weather;
+    if (editReminder){
+      updateReminder(newReminder)
+      clearEditReminder();
+    }else {
+      addReminder(newReminder)
+    };
+    e.target.reset();
+  };
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+There are some details such as the colors used for the text color, background, etc., which do not allow defining unique styles for this practice. The main focus was the implementation of Redux in the code, which allows us to better synthesize the code when making requests and not have to go through all the code, ideal for large projects. What I did was focus on best practices and divide into parts like editing and data entry. For example, we can see that for an edit, 'editReminder' was used, it will be updated to 'updateReminder', and for an entry, 'addReminder' was used.
 
-### Making a Progressive Web App
+# VisualCrossing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```javascript
+const fetchWeather = async () => {
+    const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Ecuador?unitGroup=metric&key=5LQWAFGK7VFALAM3SWURFYY8L&contentType=json`);
+    const data = await response.json();
+    return data.days[0].description;
+  }
+```
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```javascript
+const weather = await fetchWeather(newReminder.city, newReminder.date);
+    newReminder.weather = weather;
+```
