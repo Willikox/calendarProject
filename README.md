@@ -110,3 +110,4 @@ const fetchWeather = async () => {
 const weather = await fetchWeather(newReminder.city, newReminder.date);
     newReminder.weather = weather;
 ```
+The API used is VisualCrossing. By following the steps for API incorporation, we were able to use an address from Ecuador for this example with its included key. A unique key allows us to obtain weather data. In part of the previous code, we can see that through await, we make a request to wait for weather data, which we merge with newReminders.city obtained from fetchWeather. Feel free to ask if you have any questions about the code. It was submitted as a Fork to the repository, creating a branch, as I did not have access. I appreciate the opportunity and believe it meets the requested criteria, including the Bonuses. Thank you :)
